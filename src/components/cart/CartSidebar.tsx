@@ -110,9 +110,12 @@ export function CartSidebar() {
             pdfData: pdfBase64
           }),
         });
-        if (!response.ok) console.warn('El correo de respaldo no se pudo enviar.');
-      } catch (apiError) {
-        console.warn('Error de red al intentar enviar el correo de respaldo.', apiError);
+        if (!response.ok) {
+          const errData = await response.json();
+          alert(`Error enviando correo: ${errData.error || response.status}`);
+        }
+      } catch (apiError: any) {
+        alert(`Error de red al enviar correo: ${apiError.message}`);
       }
 
       setShowSuccessModal(true);
