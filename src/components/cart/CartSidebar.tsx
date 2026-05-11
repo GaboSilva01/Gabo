@@ -24,8 +24,11 @@ export function CartSidebar() {
       img.src = '/logo.svg';
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = img.width || 200;
-        canvas.height = img.height || 60;
+        // Reducir la resolución del logo para que el PDF no pese varios Megabytes
+        const MAX_WIDTH = 400;
+        const scale = (img.width && img.width > MAX_WIDTH) ? MAX_WIDTH / img.width : 1;
+        canvas.width = (img.width * scale) || 200;
+        canvas.height = (img.height * scale) || 60;
         const ctx = canvas.getContext('2d');
         if (ctx) {
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
