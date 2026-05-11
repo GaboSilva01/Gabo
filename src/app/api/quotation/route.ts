@@ -27,7 +27,6 @@ export async function POST(req: Request) {
       },
     });
 
-    const base64Data = pdfData.split('base64,')[1];
     const emailSubject = `Nueva Solicitud de Cotización - ${user.companyName}`;
 
     await transporter.sendMail({
@@ -59,8 +58,7 @@ export async function POST(req: Request) {
       attachments: [
         {
           filename: `Cotizacion_${user.companyName.replace(/\s+/g, '_')}.pdf`,
-          content: base64Data,
-          encoding: 'base64',
+          path: pdfData,
           contentType: 'application/pdf',
         },
       ],
