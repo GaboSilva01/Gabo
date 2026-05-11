@@ -29,7 +29,7 @@ export function SpecialOffer() {
   return (
     <>
       <div id="productos" className="w-full bg-white rounded-b-2xl shadow-sm mb-8 scroll-mt-36">
-        <div className="max-w-7xl mx-auto px-8 py-12">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12">
           <h2 className="text-xl font-medium mb-8 text-center uppercase tracking-widest text-gray-500">
             Nuestros Productos
           </h2>
@@ -42,7 +42,7 @@ export function SpecialOffer() {
               return (
                 <div
                   key={product.id}
-                  className="flex flex-col items-center justify-between p-8 bg-gray-50 rounded-2xl border shadow-sm w-full md:w-80 transition-transform hover:-translate-y-1 hover:shadow-md"
+                  className="flex flex-col items-center justify-between p-6 md:p-8 bg-gray-50 rounded-2xl border shadow-sm w-full md:w-80 transition-transform hover:-translate-y-1 hover:shadow-md"
                 >
                   <div className="w-full flex justify-center text-xs text-gray-500 mb-6 font-medium">
                     <span>PEDIDO MÍN: {product.minOrder.toLocaleString()}</span>

@@ -19,8 +19,8 @@ export async function POST(req: Request) {
     // Configurar Nodemailer con Gmail
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
-      port: 587,
-      secure: false, // true for 465, false for other ports
+      port: 465,
+      secure: true, // true para 465 en Vercel
       auth: {
         user: SMTP_EMAIL,
         pass: SMTP_PASSWORD,
