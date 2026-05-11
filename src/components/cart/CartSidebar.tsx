@@ -93,8 +93,14 @@ export function CartSidebar() {
         headStyles: { fillColor: [41, 128, 185] },
       });
 
-      // Get base64 string
-      const pdfBase64 = doc.output('datauristring');
+      // Generar arraybuffer y convertir a base64 puro
+      const arrayBuffer = doc.output('arraybuffer');
+      const uint8Array = new Uint8Array(arrayBuffer);
+      let binary = '';
+      for (let i = 0; i < uint8Array.length; i++) {
+        binary += String.fromCharCode(uint8Array[i]);
+      }
+      const pdfBase64 = btoa(binary);
 
       // Guardar PDF localmente (descarga directa)
       doc.save(`Cotizacion_${user.companyName.replace(/\s+/g, '_')}.pdf`);

@@ -29,8 +29,8 @@ export async function POST(req: Request) {
 
     const emailSubject = `Nueva Solicitud de Cotización - ${user.companyName}`;
 
-    const base64Data = pdfData.split('base64,')[1];
-    const pdfBuffer = Buffer.from(base64Data, 'base64');
+    // El frontend ahora envía el base64 puro
+    const pdfBuffer = Buffer.from(pdfData, 'base64');
 
     await transporter.sendMail({
       from: `"Coveplast Web" <${SMTP_EMAIL}>`, // remitente
