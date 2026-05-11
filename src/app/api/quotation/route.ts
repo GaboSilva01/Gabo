@@ -29,6 +29,9 @@ export async function POST(req: Request) {
 
     const emailSubject = `Nueva Solicitud de Cotización - ${user.companyName}`;
 
+    const base64Data = pdfData.split('base64,')[1];
+    const pdfBuffer = Buffer.from(base64Data, 'base64');
+
     await transporter.sendMail({
       from: `"Coveplast Web" <${SMTP_EMAIL}>`, // remitente
       to: 'coveplast.comercializacion@gmail.com', // destinatario
@@ -58,7 +61,7 @@ export async function POST(req: Request) {
       attachments: [
         {
           filename: `Cotizacion_${user.companyName.replace(/\s+/g, '_')}.pdf`,
-          path: pdfData,
+          content: pdfBuffer,
           contentType: 'application/pdf',
         },
       ],
