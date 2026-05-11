@@ -73,14 +73,9 @@ export function OurServices() {
         headStyles: { fillColor: [41, 128, 185] },
       });
 
-      // Generar arraybuffer y convertir a base64 puro
-      const arrayBuffer = doc.output('arraybuffer');
-      const uint8Array = new Uint8Array(arrayBuffer);
-      let binary = '';
-      for (let i = 0; i < uint8Array.length; i++) {
-        binary += String.fromCharCode(uint8Array[i]);
-      }
-      const pdfBase64 = btoa(binary);
+      // Obtener el base64 limpio directamente del datauristring
+      const dataUri = doc.output('datauristring');
+      const pdfBase64 = dataUri.split(',')[1];
 
       const res = await fetch("/api/quotation", {
         method: "POST",
