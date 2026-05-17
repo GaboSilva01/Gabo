@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useCartStore } from "@/store/useCartStore";
 import { useEffect, useRef, useState } from "react";
-import { Search, X, Menu, ShoppingCart } from "lucide-react";
+import { Search, X, Menu, ShoppingCart, ChevronDown } from "lucide-react";
 import { mockProducts } from "@/data/mockProducts";
 
 export function Navbar() {
@@ -11,8 +11,8 @@ export function Navbar() {
   const cartItemCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
   const [isVisible, setIsVisible] = useState(true);
+  const [scrolled, setScrolled] = useState(false);
   const lastScrollY = useRef(0);
-  const [showLogo, setShowLogo] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,7 +21,7 @@ export function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       const currentY = window.scrollY;
-      setShowLogo(currentY <= 50);
+      setScrolled(currentY > 20);
       if (currentY > lastScrollY.current && currentY > 80) {
         setIsVisible(false);
       } else {
@@ -41,109 +41,143 @@ export function Navbar() {
     }
   }, [searchOpen]);
 
-  const searchResults = searchQuery.trim().length > 0
-    ? mockProducts.filter((p) =>
-      p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.description.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    : [];
+  const searchResults =
+    searchQuery.trim().length > 0
+      ? mockProducts.filter(
+          (p) =>
+            p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.description.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      : [];
 
   return (
     <>
+      {/* Placeholder que ocupa el espacio del header fijo */}
+      <div className="w-full min-h-[80px] md:min-h-[140px]" aria-hidden="true" />
+
       <header
-        className="w-full bg-white border-b border-gray-200 px-4 md:px-8 sticky top-0 z-50 transition-transform duration-300 min-h-[80px] md:min-h-[140px] flex items-center"
+        className="w-full fixed top-0 left-0 right-0 z-50 min-h-[80px] md:min-h-[140px] flex items-center"
         style={{
           transform: isVisible ? "translateY(0)" : "translateY(-100%)",
+          transition: "transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease",
+          background: "rgba(10, 35, 66, 1)",
+          backdropFilter: "blur(12px)",
+          boxShadow: scrolled
+            ? "0 4px 24px rgba(10,35,66,0.22)"
+            : "none",
         }}
       >
-        {/* Fondo: logo gris a 5% de opacidad */}
         <div
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage: "url('/logo gris.svg')",
-            backgroundRepeat: "repeat",
-            backgroundSize: "160px auto",
-            opacity: 0.05,
-            pointerEvents: "none",
-          }}
-        />
+          className="relative w-full max-w-7xl mx-auto px-4 md:px-8 flex items-center justify-between"
+        >
 
-        <div className="relative w-full max-w-7xl mx-auto flex items-center justify-between">
-          
-          {/* Menu Hamburger para Móvil */}
+          {/* Hamburger móvil */}
           <div className="flex-1 md:hidden">
-            <button 
+            <button
               onClick={() => setMobileMenuOpen(true)}
-              className="p-2 -ml-2 text-gray-500 hover:text-black transition-colors"
+              className="p-2 -ml-2 text-white/70 hover:text-white transition-colors"
               aria-label="Abrir menú"
             >
               <Menu size={24} />
             </button>
           </div>
 
-          {/* Navegación Desktop */}
-          <nav className="hidden md:flex flex-1 items-center gap-8 text-sm font-medium tracking-wide">
-            <Link href="/" className="text-black hover:text-gray-600 transition-colors">INICIO</Link>
-            
-            <div className="relative group py-4 cursor-pointer">
-              <Link href="/catalogo" className="text-gray-500 group-hover:text-black transition-colors flex items-center gap-1">
-                CATÁLOGO <span className="text-xs transition-transform duration-200 group-hover:rotate-180">▼</span>
+          {/* Nav Desktop izquierda */}
+          <nav className="hidden md:flex items-center gap-1 flex-1">
+            <Link
+              href="/"
+              className="px-4 py-2 text-sm font-semibold text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+            >
+              INICIO
+            </Link>
+
+            {/* Dropdown Catálogo */}
+            <div className="relative group">
+              <Link
+                href="/catalogo"
+                className="flex items-center gap-1 px-4 py-2 text-sm font-semibold text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+              >
+                CATÁLOGO
+                <ChevronDown
+                  size={14}
+                  className="transition-transform duration-200 group-hover:rotate-180"
+                />
               </Link>
-              
-              <div className="absolute top-full left-0 mt-0 bg-white shadow-xl rounded-xl border border-gray-100 py-3 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-                <Link 
-                  href="/catalogo#productos" 
-                  className="block px-5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-black transition-colors"
+              <div className="absolute top-full left-0 mt-2 bg-white rounded-xl shadow-2xl border border-slate-100 py-2 w-44 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-2 group-hover:translate-y-0">
+                <Link
+                  href="/catalogo#productos"
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
                 >
-                  Productos
+                  🛍️ Productos
                 </Link>
-                <Link 
-                  href="/catalogo#servicios" 
-                  className="block px-5 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 hover:text-black transition-colors"
+                <Link
+                  href="/catalogo#servicios"
+                  className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
                 >
-                  Servicios
+                  ⚙️ Servicios
                 </Link>
               </div>
             </div>
           </nav>
 
-          {/* Logo Centrado */}
+          {/* Logo centrado — mismo tamaño y posición que la versión original */}
           <Link
             href="/"
-            className={`absolute left-1/2 -translate-x-1/2 flex items-center transition-all duration-300 ${showLogo ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
-              }`}
+            className="absolute left-1/2 -translate-x-1/2 flex items-center"
           >
-            <Image src="/logo.svg" alt="Coveplast Logo" width={280} height={100} className="object-contain w-36 md:w-[280px]" priority unoptimized />
+            <Image
+              src="/logo.svg"
+              alt="Coveplast"
+              width={280}
+              height={100}
+              className="object-contain w-36 md:w-[280px] brightness-0 invert"
+              priority
+              unoptimized
+            />
           </Link>
 
-          {/* Acciones Derecha (Buscar, Contacto, Carrito) */}
-          <div className="flex flex-1 items-center justify-end gap-3 md:gap-6 text-sm font-medium tracking-wide">
+          {/* Acciones derecha */}
+          <div className="flex flex-1 items-center justify-end gap-2 md:gap-3">
             <button
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 text-gray-500 hover:text-black transition-colors p-2 md:p-0"
-              aria-label="Abrir buscador"
+              className="flex items-center gap-2 px-3 py-2 text-sm font-semibold text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
+              aria-label="Buscar"
             >
-              <Search size={20} className="md:w-4 md:h-4" />
-              <span className="hidden md:inline">BUSCAR</span>
+              <Search size={18} />
+              <span className="hidden md:inline text-sm">BUSCAR</span>
             </button>
-            
+
             <a
               href="mailto:coveplast.comercializacion@gmail.com"
-              className="hidden md:flex items-center gap-1 text-gray-500 hover:text-black transition-colors"
-              title="coveplast.comercializacion@gmail.com"
+              className="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white/70 hover:text-white hover:bg-white/10 rounded-lg transition-all duration-200"
             >
               CONTÁCTANOS
             </a>
-            
+
+            {/* Botón Carrito */}
             <button
               onClick={openCart}
-              className="flex items-center gap-1.5 md:gap-2 text-black hover:text-gray-600 transition-colors bg-gray-100 px-3 py-2 md:px-4 md:py-2 rounded-full"
+              className="relative flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all duration-200"
+              style={{
+                background: "rgba(0, 119, 255, 0.15)",
+                color: "#60A5FA",
+                border: "1px solid rgba(0,119,255,0.3)",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = "rgba(0,119,255,0.28)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLButtonElement).style.background = "rgba(0, 119, 255, 0.15)";
+              }}
             >
-              <ShoppingCart size={18} className="md:hidden" />
+              <ShoppingCart size={18} />
               <span className="hidden md:inline">CARRITO</span>
-              <span className="font-bold">({cartItemCount})</span>
+              {cartItemCount > 0 && (
+                <span className="flex items-center justify-center w-5 h-5 rounded-full text-xs font-black text-white"
+                  style={{ background: "#0077FF" }}>
+                  {cartItemCount}
+                </span>
+              )}
             </button>
           </div>
         </div>
@@ -151,64 +185,119 @@ export function Navbar() {
 
       {/* Menú Móvil */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-[300] bg-white flex flex-col p-6">
-          <div className="flex justify-between items-center mb-10">
-            <Image src="/logo.svg" alt="Coveplast Logo" width={160} height={60} className="object-contain" unoptimized />
-            <button onClick={() => setMobileMenuOpen(false)} className="p-2 -mr-2 text-gray-500 hover:text-black">
-              <X size={28} />
+        <div
+          className="fixed inset-0 z-[300] flex flex-col"
+          style={{ background: "#0A2342" }}
+        >
+          <div className="flex justify-between items-center px-6 py-5 border-b border-white/10">
+            <Image
+              src="/logo.svg"
+              alt="Coveplast"
+              width={150}
+              height={50}
+              className="object-contain brightness-0 invert"
+              unoptimized
+            />
+            <button
+              onClick={() => setMobileMenuOpen(false)}
+              className="p-2 text-white/70 hover:text-white transition-colors"
+            >
+              <X size={26} />
             </button>
           </div>
-          
-          <nav className="flex flex-col gap-6 text-lg font-medium tracking-wide">
-            <Link href="/" onClick={() => setMobileMenuOpen(false)} className="text-black border-b border-gray-100 pb-4">INICIO</Link>
-            <div className="flex flex-col gap-4 border-b border-gray-100 pb-4">
-              <span className="text-gray-400 text-sm">CATÁLOGO</span>
-              <Link href="/catalogo#productos" onClick={() => setMobileMenuOpen(false)} className="text-black pl-4">Productos</Link>
-              <Link href="/catalogo#servicios" onClick={() => setMobileMenuOpen(false)} className="text-black pl-4">Servicios</Link>
+
+          <nav className="flex flex-col px-6 py-8 gap-2">
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className="text-white font-semibold text-lg py-4 border-b border-white/10"
+            >
+              Inicio
+            </Link>
+            <div className="flex flex-col gap-1 border-b border-white/10 py-4">
+              <span className="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">
+                Catálogo
+              </span>
+              <Link
+                href="/catalogo#productos"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-white/80 hover:text-white font-medium text-base py-2 pl-3"
+              >
+                🛍️ Productos
+              </Link>
+              <Link
+                href="/catalogo#servicios"
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-white/80 hover:text-white font-medium text-base py-2 pl-3"
+              >
+                ⚙️ Servicios
+              </Link>
             </div>
-            <a href="mailto:coveplast.comercializacion@gmail.com" className="text-gray-500 pt-4">Contáctanos</a>
+            <a
+              href="mailto:coveplast.comercializacion@gmail.com"
+              className="text-white/60 hover:text-white font-medium text-base py-4"
+            >
+              Contáctanos
+            </a>
           </nav>
         </div>
       )}
 
       {/* Modal de búsqueda */}
       {searchOpen && (
-        <div className="fixed inset-0 z-[200] flex flex-col items-center pt-20 md:pt-24 bg-black/60 backdrop-blur-sm px-4">
+        <div className="fixed inset-0 z-[200] flex flex-col items-center pt-16 bg-black/70 backdrop-blur-md px-4">
           <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden">
-            <div className="flex items-center gap-3 px-4 py-3 md:px-5 md:py-4 border-b">
-              <Search size={20} className="text-gray-400 shrink-0" />
+            <div className="flex items-center gap-3 px-5 py-4 border-b">
+              <Search size={20} className="text-slate-400 shrink-0" />
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder="Buscar productos..."
-                className="flex-1 text-base outline-none bg-transparent"
+                placeholder="Buscar productos o servicios..."
+                className="flex-1 text-base outline-none bg-transparent text-slate-800 placeholder:text-slate-400"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button onClick={() => setSearchOpen(false)} className="text-gray-400 hover:text-black transition-colors p-1">
+              <button
+                onClick={() => setSearchOpen(false)}
+                className="text-slate-400 hover:text-slate-800 transition-colors p-1"
+              >
                 <X size={20} />
               </button>
             </div>
-            <div className="max-h-[60vh] md:max-h-80 overflow-y-auto">
+            <div className="max-h-[60vh] overflow-y-auto">
               {searchQuery.trim() === "" ? (
-                <p className="text-center text-gray-400 py-8 text-sm">Escribe para buscar productos o servicios</p>
+                <p className="text-center text-slate-400 py-10 text-sm">
+                  Escribe para buscar productos o servicios
+                </p>
               ) : searchResults.length === 0 ? (
-                <p className="text-center text-gray-400 py-8 text-sm">No se encontraron resultados para &quot;{searchQuery}&quot;</p>
+                <p className="text-center text-slate-400 py-10 text-sm">
+                  Sin resultados para &quot;{searchQuery}&quot;
+                </p>
               ) : (
                 searchResults.map((product) => (
                   <button
                     key={product.id}
-                    onClick={() => {
-                      setSearchOpen(false);
-                      // TODO: redirect to product or handle click
-                    }}
-                    className="w-full flex items-center gap-4 px-4 py-3 hover:bg-gray-50 transition-colors text-left"
+                    onClick={() => setSearchOpen(false)}
+                    className="w-full flex items-center gap-4 px-5 py-3.5 hover:bg-slate-50 transition-colors text-left border-b border-slate-50 last:border-0"
                   >
-                    <img src={product.imageUrl} alt={product.name} className="w-10 h-10 md:w-12 md:h-12 object-contain mix-blend-multiply" />
-                    <div>
-                      <p className="font-semibold text-sm">{product.name}</p>
-                      <p className="text-gray-500 text-xs line-clamp-1">{product.description}</p>
+                    <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center shrink-0 p-1">
+                      <img
+                        src={product.imageUrl}
+                        alt={product.name}
+                        className="w-full h-full object-contain mix-blend-multiply"
+                      />
                     </div>
+                    <div>
+                      <p className="font-semibold text-sm text-slate-800">
+                        {product.name}
+                      </p>
+                      <p className="text-slate-400 text-xs line-clamp-1 mt-0.5">
+                        {product.description}
+                      </p>
+                    </div>
+                    <span className="ml-auto text-xs font-bold text-blue-500 shrink-0">
+                      Ver →
+                    </span>
                   </button>
                 ))
               )}

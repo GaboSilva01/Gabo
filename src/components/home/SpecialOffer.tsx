@@ -6,31 +6,29 @@ import { mockProducts, Product } from "@/data/mockProducts";
 import { useCartStore } from "@/store/useCartStore";
 import { MaquilaModal } from "@/components/services/MaquilarModal";
 import { KitVasosModal } from "@/components/services/KitVasosModal";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Sparkles, ShoppingCart, CheckCircle2 } from "lucide-react";
 
 export function SpecialOffer() {
   const addItem = useCartStore((state) => state.addItem);
-  // Modal de maquila genérico (la mayoría de productos)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  // Modal exclusivo del Kit de Vasos y Platos
   const [kitProduct, setKitProduct] = useState<Product | null>(null);
   const [animatingProductId, setAnimatingProductId] = useState<string | null>(null);
-  
-  // Estado para las cantidades seleccionadas por producto
   const [quantities, setQuantities] = useState<Record<string, number>>({});
 
-  const getQuantity = (productId: string, minOrder: number) => {
-    return quantities[productId] || minOrder;
-  };
+  const getQuantity = (productId: string, minOrder: number) =>
+    quantities[productId] || minOrder;
 
-  const handleUpdateQuantity = (productId: string, newQuantity: number, minOrder: number) => {
-    setQuantities(prev => ({
+  const handleUpdateQuantity = (
+    productId: string,
+    newQuantity: number,
+    minOrder: number
+  ) => {
+    setQuantities((prev) => ({
       ...prev,
-      [productId]: Math.max(newQuantity, minOrder)
+      [productId]: Math.max(newQuantity, minOrder),
     }));
   };
 
-  // Redirige al modal correcto según el tipo de producto
   const handlePersonalizeClick = (product: Product, quantity: number) => {
     if (product.kitVasos) {
       setKitProduct({ ...product, selectedQuantity: quantity } as any);
@@ -41,112 +39,180 @@ export function SpecialOffer() {
 
   return (
     <>
-      <div id="productos" className="w-full bg-white rounded-b-2xl shadow-sm mb-8 scroll-mt-36">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12">
-          <h2 className="text-xl font-medium mb-8 text-center uppercase tracking-widest text-gray-500">
-            Nuestros Productos
-          </h2>
+      <section id="productos" className="w-full scroll-mt-24 mb-10">
+        {/* Header de sección */}
+        <div className="max-w-7xl mx-auto px-4 md:px-8 pt-10 pb-8">
+          <div className="flex flex-col items-center text-center mb-10">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase px-3 py-1.5 rounded-full mb-4"
+              style={{ background: "var(--accent-light)", color: "var(--accent)" }}>
+              🛍️ Catálogo
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black tracking-tight"
+              style={{ color: "var(--primary)" }}>
+              Nuestros Productos
+            </h2>
+            <p className="text-slate-500 mt-2 max-w-lg text-sm">
+              Selecciona la cantidad, personaliza y agrega a tu cotización.
+            </p>
+          </div>
 
-          <div className="flex flex-col md:flex-row items-stretch justify-center gap-8 pb-8 flex-wrap">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {mockProducts.map((product) => {
               const isCustomizable = product.customizable !== false;
               const currentQuantity = getQuantity(product.id, product.minOrder);
-              
+              const isAnimating = animatingProductId === product.id;
+
               return (
                 <div
                   key={product.id}
-                  className="flex flex-col items-center justify-between p-6 md:p-8 bg-gray-50 rounded-2xl border shadow-sm w-full md:w-80 transition-transform hover:-translate-y-1 hover:shadow-md"
+                  className="group relative flex flex-col bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                  style={{
+                    border: "1px solid var(--border)",
+                    boxShadow: "0 2px 8px rgba(10,35,66,0.05)",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.boxShadow =
+                      "0 12px 40px rgba(10,35,66,0.12)";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLDivElement).style.boxShadow =
+                      "0 2px 8px rgba(10,35,66,0.05)";
+                  }}
                 >
-                  <div className="w-full flex justify-center text-xs text-gray-500 mb-6 font-medium">
-                    <span>PEDIDO MÍN: {product.minOrder.toLocaleString()}</span>
+                  {/* Badge pedido mínimo */}
+                  <div className="absolute top-3 left-3 z-10">
+                    <span className="text-[10px] font-bold px-2 py-1 rounded-full"
+                      style={{ background: "var(--accent-light)", color: "var(--accent)" }}>
+                      MÍN. {product.minOrder.toLocaleString()} unid.
+                    </span>
                   </div>
 
-                  <h3 className="font-bold text-2xl mb-6 text-center text-gray-900">
-                    {product.name}
-                  </h3>
+                  {/* Área de imagen */}
+                  <div
+                    className="relative flex items-center justify-center pt-10 pb-4 px-6 cursor-pointer"
+                    style={{ background: "linear-gradient(135deg, #F8FAFF 0%, #EFF4FF 100%)", minHeight: "200px" }}
+                    onClick={() =>
+                      isCustomizable && handlePersonalizeClick(product, currentQuantity)
+                    }
+                  >
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      className="object-contain w-full h-40 mix-blend-multiply drop-shadow-lg transition-transform duration-300 group-hover:scale-105"
+                    />
 
-                  {/* Imagen clickeable solo si es personalizable */}
-                  {isCustomizable ? (
-                    <button
-                      onClick={() => handlePersonalizeClick(product, currentQuantity)}
-                      className="relative h-56 w-56 mb-6 group focus:outline-none"
-                      title="Personalizar este producto"
-                    >
-                      <img
-                        src={product.imageUrl}
-                        alt={product.name}
-                        className="object-contain w-full h-full mix-blend-multiply drop-shadow-xl transition-transform group-hover:scale-105"
-                      />
-                      <span className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <span className="bg-black/70 text-white text-xs font-bold px-3 py-1 rounded-full">Personalizar</span>
-                      </span>
-                    </button>
-                  ) : (
-                    <div className="relative h-56 w-56 mb-6">
-                      <img
-                        src={product.imageUrl}
-                        alt={product.name}
-                        className="object-contain w-full h-full mix-blend-multiply drop-shadow-xl"
-                      />
-                    </div>
-                  )}
-
-                  <p className="text-gray-600 text-center mb-6 min-h-[48px] text-sm">
-                    {product.description}
-                  </p>
-
-                  <div className="w-full mb-6">
-                    <label className="block text-xs font-bold text-gray-500 mb-2 text-center uppercase tracking-wide">
-                      Cantidad a solicitar
-                    </label>
-                    <div className="flex items-center justify-between border border-gray-300 rounded-lg overflow-hidden bg-white">
-                      <button 
-                        onClick={() => handleUpdateQuantity(product.id, currentQuantity - 100, product.minOrder)}
-                        className="p-3 text-gray-500 hover:text-black hover:bg-gray-100 transition-colors"
-                      >
-                        <Minus size={16} />
-                      </button>
-                      <span className="font-semibold text-lg">{currentQuantity.toLocaleString()}</span>
-                      <button 
-                        onClick={() => handleUpdateQuantity(product.id, currentQuantity + 100, product.minOrder)}
-                        className="p-3 text-gray-500 hover:text-black hover:bg-gray-100 transition-colors"
-                      >
-                        <Plus size={16} />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="mt-auto w-full flex flex-col gap-2">
-                    {isCustomizable ? (
-                      <Button
-                        onClick={() => handlePersonalizeClick(product, currentQuantity)}
-                        className="w-full py-5 font-bold uppercase tracking-wider bg-black hover:bg-gray-800 text-white transition-all duration-300"
-                      >
-                        Personalizar
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={() => {
-                          addItem(product, currentQuantity);
-                          setAnimatingProductId(product.id);
-                          setTimeout(() => setAnimatingProductId(null), 1000);
-                        }}
-                        className={`w-full py-5 font-bold uppercase tracking-wider transition-all duration-300 ${
-                          animatingProductId === product.id
-                            ? "bg-green-600 text-white scale-95"
-                            : "bg-black hover:bg-gray-800 text-white"
-                        }`}
-                      >
-                        {animatingProductId === product.id ? "¡Agregado!" : "Agregar al Carrito"}
-                      </Button>
+                    {/* Overlay personalizar */}
+                    {isCustomizable && (
+                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                        style={{ background: "rgba(10,35,66,0.55)" }}>
+                        <span className="flex items-center gap-2 text-white text-xs font-bold px-4 py-2 rounded-full"
+                          style={{ background: "rgba(0,119,255,0.9)" }}>
+                          <Sparkles size={12} />
+                          Personalizar
+                        </span>
+                      </div>
                     )}
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex flex-col flex-1 px-4 pb-5 pt-3 gap-3">
+                    <div>
+                      <h3 className="font-bold text-base leading-tight"
+                        style={{ color: "var(--foreground)" }}>
+                        {product.name}
+                      </h3>
+                      <p className="text-xs mt-1 line-clamp-2"
+                        style={{ color: "var(--muted-foreground)" }}>
+                        {product.description}
+                      </p>
+                    </div>
+
+                    {/* Selector de cantidad */}
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider"
+                        style={{ color: "var(--muted-foreground)" }}>
+                        Cantidad
+                      </span>
+                      <div className="flex items-center mt-1.5 rounded-lg overflow-hidden"
+                        style={{ border: "1px solid var(--border)" }}>
+                        <button
+                          onClick={() =>
+                            handleUpdateQuantity(product.id, currentQuantity - 100, product.minOrder)
+                          }
+                          className="flex-none px-3 py-2 text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+                        >
+                          <Minus size={14} />
+                        </button>
+                        <span className="flex-1 text-center font-bold text-sm"
+                          style={{ color: "var(--foreground)" }}>
+                          {currentQuantity.toLocaleString()}
+                        </span>
+                        <button
+                          onClick={() =>
+                            handleUpdateQuantity(product.id, currentQuantity + 100, product.minOrder)
+                          }
+                          className="flex-none px-3 py-2 text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors"
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Botón de acción */}
+                    <div className="mt-auto">
+                      {isCustomizable ? (
+                        <button
+                          onClick={() => handlePersonalizeClick(product, currentQuantity)}
+                          className="w-full py-2.5 rounded-xl text-sm font-bold transition-all duration-200 flex items-center justify-center gap-2"
+                          style={{
+                            background: "var(--primary)",
+                            color: "white",
+                          }}
+                          onMouseEnter={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.background = "var(--primary-hover)";
+                          }}
+                          onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLButtonElement).style.background = "var(--primary)";
+                          }}
+                        >
+                          <Sparkles size={14} />
+                          Personalizar
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            addItem(product, currentQuantity);
+                            setAnimatingProductId(product.id);
+                            setTimeout(() => setAnimatingProductId(null), 1500);
+                          }}
+                          className="w-full py-2.5 rounded-xl text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2"
+                          style={{
+                            background: isAnimating ? "#16A34A" : "var(--primary)",
+                            color: "white",
+                            transform: isAnimating ? "scale(0.97)" : "scale(1)",
+                          }}
+                        >
+                          {isAnimating ? (
+                            <>
+                              <CheckCircle2 size={14} />
+                              ¡Agregado!
+                            </>
+                          ) : (
+                            <>
+                              <ShoppingCart size={14} />
+                              Agregar al Carrito
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
             })}
           </div>
         </div>
-      </div>
+      </section>
 
       <MaquilaModal
         isOpen={selectedProduct !== null}

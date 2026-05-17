@@ -129,51 +129,99 @@ export function OurServices() {
 
   return (
     <>
-      <div id="servicios" className="w-full bg-white rounded-2xl shadow-sm mb-8 scroll-mt-36">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-8 md:py-12">
-          <h2 className="text-xl font-medium mb-8 text-center uppercase tracking-widest text-gray-500">
-            Nuestros Servicios
-          </h2>
+      <section id="servicios" className="w-full scroll-mt-24 mb-10">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 pb-10">
 
-          <div className="flex flex-col md:flex-row items-stretch justify-center gap-8 pb-8 flex-wrap">
+          {/* Header de sección */}
+          <div className="flex flex-col items-center text-center mb-10">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase px-3 py-1.5 rounded-full mb-4"
+              style={{ background: "var(--accent-light)", color: "var(--accent)" }}>
+              ⚙️ Servicios
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black tracking-tight"
+              style={{ color: "var(--primary)" }}>
+              Nuestros Servicios
+            </h2>
+            <p className="text-slate-500 mt-2 max-w-lg text-sm">
+              Solicita una cotización personalizada para cualquiera de nuestros servicios industriales.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {SERVICES.map((service) => (
               <div
                 key={service.id}
-                className="flex flex-col items-center justify-between p-6 md:p-8 bg-gray-50 rounded-2xl border shadow-sm w-full md:w-96 transition-transform hover:-translate-y-1 hover:shadow-md"
+                className="group relative flex flex-col bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1"
+                style={{
+                  border: "1px solid var(--border)",
+                  boxShadow: "0 2px 8px rgba(10,35,66,0.05)",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.boxShadow =
+                    "0 12px 40px rgba(10,35,66,0.12)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.boxShadow =
+                    "0 2px 8px rgba(10,35,66,0.05)";
+                }}
               >
-                <div className="w-full flex justify-between text-xs text-gray-500 mb-6 font-medium">
-                  <span className="text-blue-600">{service.tag}</span>
+                {/* Franja superior de color */}
+                <div className="h-1.5 w-full" style={{ background: "var(--accent)" }} />
+
+                <div className="flex flex-col items-center p-7 gap-5">
+                  {/* Tag + Emoji */}
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="text-xs font-bold tracking-widest uppercase px-3 py-1 rounded-full"
+                      style={{ background: "var(--accent-light)", color: "var(--accent)" }}>
+                      {service.tag}
+                    </span>
+                    <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-5xl"
+                      style={{ background: "linear-gradient(135deg, #F0F4FF 0%, #E8F1FF 100%)" }}>
+                      {service.emoji}
+                    </div>
+                  </div>
+
+                  {/* Nombre y descripción */}
+                  <div className="text-center">
+                    <h3 className="font-black text-2xl mb-2"
+                      style={{ color: "var(--primary)" }}>
+                      {service.name}
+                    </h3>
+                    <p className="text-sm leading-relaxed"
+                      style={{ color: "var(--muted-foreground)" }}>
+                      {service.description}
+                    </p>
+                  </div>
+
+                  {/* Botón */}
+                  <button
+                    onClick={() => handleQuoteClick(service.id, service.name)}
+                    disabled={isGenerating}
+                    className="w-full py-3 rounded-xl text-sm font-bold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                    style={{ background: "var(--primary)", color: "white" }}
+                    onMouseEnter={(e) => {
+                      if (!isGenerating)
+                        (e.currentTarget as HTMLButtonElement).style.background = "var(--primary-hover)";
+                    }}
+                    onMouseLeave={(e) => {
+                      (e.currentTarget as HTMLButtonElement).style.background = "var(--primary)";
+                    }}
+                  >
+                    {isGenerating ? (
+                      <>
+                        <Loader2 className="animate-spin" size={16} />
+                        Enviando...
+                      </>
+                    ) : (
+                      "Solicitar cotización →"
+                    )}
+                  </button>
                 </div>
-
-                <h3 className="font-bold text-2xl mb-6 text-center text-gray-900">{service.name}</h3>
-
-                <div className="h-40 w-40 mb-6 flex items-center justify-center bg-gray-100 rounded-xl">
-                  <span className="text-6xl">{service.emoji}</span>
-                </div>
-
-                <p className="text-gray-600 text-center text-sm leading-relaxed mb-6">
-                  {service.description}
-                </p>
-
-                <Button
-                  onClick={() => handleQuoteClick(service.id, service.name)}
-                  disabled={isGenerating}
-                  className="w-full py-5 font-bold uppercase tracking-wider bg-black hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
-                >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="animate-spin" size={18} />
-                      Enviando...
-                    </>
-                  ) : (
-                    "Solicitar cotización"
-                  )}
-                </Button>
               </div>
             ))}
           </div>
         </div>
-      </div>
+      </section>
 
       <LoginModal
         isOpen={showLogin}
