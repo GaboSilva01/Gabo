@@ -13,7 +13,7 @@ import autoTable from "jspdf-autotable";
 const SERVICES = [
   {
     id: "maquilar",
-    name: "Maquilar",
+    name: "Maquila",
     description: "Ofrecemos servicio de maquila personalizada para tus productos plásticos: selección de color Pantone, tipo de impresión y acabados especiales.",
     emoji: "🏭",
     tag: "SERVICIO PERSONALIZADO",
