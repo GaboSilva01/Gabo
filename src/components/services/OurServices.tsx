@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { LoginModal } from "@/components/auth/LoginModal";
 import { SuccessModal } from "@/components/cart/SuccessModal";
+import { MoliendaModal } from "@/components/services/MoliendaModal";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import jsPDF from "jspdf";
@@ -17,6 +18,13 @@ const SERVICES = [
     emoji: "🏭",
     tag: "SERVICIO PERSONALIZADO",
   },
+  {
+    id: "molienda",
+    name: "Molienda",
+    description: "Servicio de molienda de materiales plásticos para reciclaje y reutilización industrial. Procesamos tus residuos con eficiencia y calidad.",
+    emoji: "⚙️",
+    tag: "SERVICIO INDUSTRIAL",
+  },
 ];
 
 export function OurServices() {
@@ -24,6 +32,7 @@ export function OurServices() {
   const [showLogin, setShowLogin] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [showMoliendaModal, setShowMoliendaModal] = useState(false);
 
   const loadLogoAsBase64 = (): Promise<string> => {
     return new Promise((resolve) => {
@@ -45,7 +54,7 @@ export function OurServices() {
     });
   };
 
-  const generateMaquilaQuote = async (currentUser: typeof user) => {
+  const generateServiceQuote = async (currentUser: typeof user, serviceId: string, serviceName: string) => {
     if (!currentUser) return;
     setIsGenerating(true);
     try {
@@ -56,7 +65,7 @@ export function OurServices() {
         doc.addImage(logoBase64, 'PNG', 14, 15, 50, 15);
       } else {
         doc.setFontSize(22);
-        doc.text("Solicitud de Maquila — Coveplast", 14, 25);
+        doc.text(`Solicitud de ${serviceName} — Coveplast`, 14, 25);
       }
       
       doc.setFontSize(12);
@@ -68,7 +77,7 @@ export function OurServices() {
       autoTable(doc, {
         startY: 65,
         head: [["Servicio", "Descripción"]],
-        body: [["Maquila personalizada", "Solicitud de cotización para servicio de maquila"]],
+        body: [[serviceName, `Solicitud de cotización para servicio de ${serviceName.toLowerCase()}`]],
         theme: "grid",
         headStyles: { fillColor: [41, 128, 185] },
       });
@@ -83,7 +92,7 @@ export function OurServices() {
         body: JSON.stringify({
           user: currentUser,
           pdfData: pdfBase64,
-          subject: `Solicitud de Maquila - ${currentUser.companyName}`,
+          subject: `Solicitud de ${serviceName} - ${currentUser.companyName}`,
         }),
       });
 
@@ -101,11 +110,20 @@ export function OurServices() {
     }
   };
 
-  const handleQuoteClick = () => {
+  const [pendingService, setPendingService] = useState<{ id: string; name: string } | null>(null);
+
+  const handleQuoteClick = (serviceId: string, serviceName: string) => {
+    // El servicio de Molienda tiene su propio modal con formulario específico
+    if (serviceId === "molienda") {
+      setShowMoliendaModal(true);
+      return;
+    }
+
     if (!user) {
+      setPendingService({ id: serviceId, name: serviceName });
       setShowLogin(true);
     } else {
-      generateMaquilaQuote(user);
+      generateServiceQuote(user, serviceId, serviceName);
     }
   };
 
@@ -138,7 +156,7 @@ export function OurServices() {
                 </p>
 
                 <Button
-                  onClick={handleQuoteClick}
+                  onClick={() => handleQuoteClick(service.id, service.name)}
                   disabled={isGenerating}
                   className="w-full py-5 font-bold uppercase tracking-wider bg-black hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
                 >
@@ -165,9 +183,16 @@ export function OurServices() {
           // Pequeño delay para que el store se actualice
           setTimeout(() => {
             const freshUser = useAuthStore.getState().user;
-            generateMaquilaQuote(freshUser);
+            if (pendingService) {
+              generateServiceQuote(freshUser, pendingService.id, pendingService.name);
+            }
           }, 100);
         }}
+      />
+
+      <MoliendaModal
+        isOpen={showMoliendaModal}
+        onClose={() => setShowMoliendaModal(false)}
       />
       
       <SuccessModal 

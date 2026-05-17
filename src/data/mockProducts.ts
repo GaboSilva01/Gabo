@@ -9,41 +9,42 @@ export type Product = {
   isSpecialOffer?: boolean;
   minOrder: number;
   customizable?: boolean; // false = oculta el botón "Personalizar"
+  kitVasos?: boolean;     // true = abre el modal de selección de color del kit
 };
 
 export const mockProducts: Product[] = [
   {
     id: "1",
     name: "Cuñete de 19L",
-    description: "Cuñete plástico resistente ideal para pinturas y químicos. Pedido mínimo de 500 unidades.",
+    description: "Cuñete plástico resistente ideal para pinturas y químicos. Pedido mínimo de 100 unidades.",
     price: 4500,
     category: "Cuñetes",
     unit: "Unidad",
     imageUrl: "/cuñete 19L.png",
     isSpecialOffer: true,
-    minOrder: 500,
+    minOrder: 100,
   },
   {
     id: "2",
     name: "Vaso sobre copa",
-    description: "Vasos de alta calidad modelo sobre copa. Pedido mínimo de 3500 unidades.",
+    description: "Vasos de alta calidad modelo sobre copa. Pedido mínimo de 100 unidades.",
     price: 1500,
     category: "Vasos",
     unit: "Unidad",
     imageUrl: "/vasos sobre de copa.png",
     isSpecialOffer: true,
-    minOrder: 3500,
+    minOrder: 100,
   },
   {
     id: "3",
     name: "Jeringa 5cc",
-    description: "Jeringa plástica desechable de 5cc. Pedido mínimo según disponibilidad.",
+    description: "Jeringa plástica desechable de 5cc. Pedido mínimo de 100 unidades.",
     price: 800,
     category: "Jeringas",
     unit: "Unidad",
     imageUrl: "/jeringas 5cc.png",
     isSpecialOffer: true,
-    minOrder: 1000,
+    minOrder: 100,
     customizable: false,
   },
   {
@@ -55,7 +56,7 @@ export const mockProducts: Product[] = [
     unit: "Unidad",
     imageUrl: "/Tina Irani 250g.png",
     isSpecialOffer: true,
-    minOrder: 1000,
+    minOrder: 100,
   },
   {
     id: "5",
@@ -66,7 +67,7 @@ export const mockProducts: Product[] = [
     unit: "Unidad",
     imageUrl: "/Tina Irani 500g.png",
     isSpecialOffer: true,
-    minOrder: 1000,
+    minOrder: 100,
   },
   {
     id: "6",
@@ -77,18 +78,18 @@ export const mockProducts: Product[] = [
     unit: "Unidad",
     imageUrl: "/Envase Margarina 500g.png",
     isSpecialOffer: true,
-    minOrder: 1000,
+    minOrder: 100,
   },
   {
     id: "7",
-    name: "Tapas 28mm",
-    description: "Tapas plásticas de 28mm para diversos envases.",
+    name: "Tapas 28mm Sin Liner",
+    description: "Tapas plásticas de 28mm Sin Liner para diversos envases.",
     price: 300,
     category: "Tapas",
     unit: "Unidad",
     imageUrl: "/Tapas 28mm.png",
     isSpecialOffer: true,
-    minOrder: 5000,
+    minOrder: 100,
   },
   {
     id: "8",
@@ -99,7 +100,7 @@ export const mockProducts: Product[] = [
     unit: "Unidad",
     imageUrl: "/Cajetines.png",
     isSpecialOffer: true,
-    minOrder: 1000,
+    minOrder: 100,
   },
   {
     id: "9",
@@ -110,7 +111,32 @@ export const mockProducts: Product[] = [
     unit: "Unidad",
     imageUrl: "/Centro de Piso.png",
     isSpecialOffer: true,
-    minOrder: 1000,
+    minOrder: 100,
+    customizable: false,
+  },
+  {
+    id: "10",
+    name: "Kit de Vasos y Platos",
+    description: "Kit completo de vasos y platos plásticos. Selecciona el color de tu preferencia. Pedido mínimo de 100 unidades.",
+    price: 2000,
+    category: "Kits",
+    unit: "Kit",
+    imageUrl: "/kit vasos y platos.png",
+    isSpecialOffer: true,
+    minOrder: 100,
+    customizable: true,
+    kitVasos: true,
+  },
+  {
+    id: "11",
+    name: "Kit Médico",
+    description: "Kit de productos médicos plásticos descartables. Pedido mínimo de 100 unidades.",
+    price: 2500,
+    category: "Kits",
+    unit: "Kit",
+    imageUrl: "/kit medico.png",
+    isSpecialOffer: true,
+    minOrder: 100,
     customizable: false,
   }
 ];

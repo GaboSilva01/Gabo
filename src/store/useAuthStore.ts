@@ -5,6 +5,8 @@ export interface User {
   email: string;
   companyName: string;
   phone: string;
+  nombre?: string;
+  rif?: string;
 }
 
 interface AuthStore {

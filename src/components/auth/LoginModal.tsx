@@ -33,6 +33,8 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
   const [formData, setFormData] = useState({
     email: user?.email ?? "",
     companyName: user?.companyName ?? "",
+    nombre: user?.nombre ?? "",
+    rif: user?.rif ?? "",
   });
 
   if (!isOpen) return null;
@@ -71,6 +73,30 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+            <input
+              type="text"
+              required
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all"
+              value={formData.nombre}
+              onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+              placeholder="Ej. Juan Pérez"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">RIF</label>
+            <input
+              type="text"
+              required
+              className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all"
+              value={formData.rif}
+              onChange={(e) => setFormData({ ...formData, rif: e.target.value })}
+              placeholder="Ej. J-12345678-9"
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de la Empresa</label>
             <input

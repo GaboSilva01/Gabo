@@ -4,12 +4,16 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { mockProducts, Product } from "@/data/mockProducts";
 import { useCartStore } from "@/store/useCartStore";
-import { MaquilarModal } from "@/components/services/MaquilarModal";
+import { MaquilaModal } from "@/components/services/MaquilarModal";
+import { KitVasosModal } from "@/components/services/KitVasosModal";
 import { Minus, Plus } from "lucide-react";
 
 export function SpecialOffer() {
   const addItem = useCartStore((state) => state.addItem);
+  // Modal de maquila genérico (la mayoría de productos)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  // Modal exclusivo del Kit de Vasos y Platos
+  const [kitProduct, setKitProduct] = useState<Product | null>(null);
   const [animatingProductId, setAnimatingProductId] = useState<string | null>(null);
   
   // Estado para las cantidades seleccionadas por producto
@@ -24,6 +28,15 @@ export function SpecialOffer() {
       ...prev,
       [productId]: Math.max(newQuantity, minOrder)
     }));
+  };
+
+  // Redirige al modal correcto según el tipo de producto
+  const handlePersonalizeClick = (product: Product, quantity: number) => {
+    if (product.kitVasos) {
+      setKitProduct({ ...product, selectedQuantity: quantity } as any);
+    } else {
+      setSelectedProduct({ ...product, selectedQuantity: quantity } as any);
+    }
   };
 
   return (
@@ -55,7 +68,7 @@ export function SpecialOffer() {
                   {/* Imagen clickeable solo si es personalizable */}
                   {isCustomizable ? (
                     <button
-                      onClick={() => setSelectedProduct({ ...product, selectedQuantity: currentQuantity } as any)}
+                      onClick={() => handlePersonalizeClick(product, currentQuantity)}
                       className="relative h-56 w-56 mb-6 group focus:outline-none"
                       title="Personalizar este producto"
                     >
@@ -106,7 +119,7 @@ export function SpecialOffer() {
                   <div className="mt-auto w-full flex flex-col gap-2">
                     {isCustomizable ? (
                       <Button
-                        onClick={() => setSelectedProduct({ ...product, selectedQuantity: currentQuantity } as any)}
+                        onClick={() => handlePersonalizeClick(product, currentQuantity)}
                         className="w-full py-5 font-bold uppercase tracking-wider bg-black hover:bg-gray-800 text-white transition-all duration-300"
                       >
                         Personalizar
@@ -135,11 +148,18 @@ export function SpecialOffer() {
         </div>
       </div>
 
-      <MaquilarModal
+      <MaquilaModal
         isOpen={selectedProduct !== null}
         product={selectedProduct}
         onClose={() => setSelectedProduct(null)}
         initialQuantity={(selectedProduct as any)?.selectedQuantity}
+      />
+
+      <KitVasosModal
+        isOpen={kitProduct !== null}
+        product={kitProduct}
+        onClose={() => setKitProduct(null)}
+        initialQuantity={(kitProduct as any)?.selectedQuantity}
       />
     </>
   );

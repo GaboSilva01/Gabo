@@ -13,7 +13,7 @@ interface MaquilarModalProps {
   initialQuantity?: number;
 }
 
-export function MaquilarModal({ isOpen, onClose, product, initialQuantity }: MaquilarModalProps) {
+export function MaquilaModal({ isOpen, onClose, product, initialQuantity }: MaquilarModalProps) {
   const addItem = useCartStore((state) => state.addItem);
   
   const [wantsPersonalization, setWantsPersonalization] = useState(false);
@@ -44,6 +44,7 @@ export function MaquilarModal({ isOpen, onClose, product, initialQuantity }: Maq
 
   const isCunete = product?.name.toLowerCase().includes("cuñete");
   const isCajetin = product?.name.toLowerCase().includes("cajetin");
+  const isTapa = product?.name.toLowerCase().includes("tapa");
 
   // Validación para habilitar el botón "Agregar"
   const isFormValid = () => {
@@ -118,7 +119,7 @@ export function MaquilarModal({ isOpen, onClose, product, initialQuantity }: Maq
                         onChange={(e) => setCajetinShape('cuadrada')}
                         className="text-black focus:ring-black accent-black"
                       />
-                      <span>Cuadrada</span>
+                      <span>Cuadrado</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input 
@@ -181,8 +182,8 @@ export function MaquilarModal({ isOpen, onClose, product, initialQuantity }: Maq
                 </>
               )}
 
-              {/* Casilla de Tapa */}
-              {!isCajetin && (
+              {/* Casilla de Tapa - solo si NO es Cajetines y NO es Tapas */}
+              {!isCajetin && !isTapa && (
                 <div className="flex flex-col gap-3">
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input 
@@ -227,33 +228,38 @@ export function MaquilarModal({ isOpen, onClose, product, initialQuantity }: Maq
                 </div>
               )}
 
-              <hr className="border-gray-100" />
+              {/* Personalización de impresión: solo disponible para productos que no sean Cajetines */}
+              {!isCajetin && (
+                <>
+                  <hr className="border-gray-100" />
 
-              {/* Casilla de Personalización */}
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="w-5 h-5 rounded border-gray-300 text-black focus:ring-black accent-black"
-                  checked={wantsPersonalization}
-                  onChange={(e) => setWantsPersonalization(e.target.checked)}
-                />
-                <span className="font-semibold text-gray-800">Desea Personalización (Impresión)</span>
-              </label>
-
-              {/* Color Pantone (solo si seleccionó personalización) */}
-              {wantsPersonalization && (
-                <div className="pl-8 animate-in fade-in slide-in-from-top-2 duration-200">
-                  <label className="block text-sm font-semibold text-gray-800 mb-1">
-                    Color <span className="text-gray-400 font-normal">(código Pantone)</span>
+                  {/* Casilla de Personalización */}
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      className="w-5 h-5 rounded border-gray-300 text-black focus:ring-black accent-black"
+                      checked={wantsPersonalization}
+                      onChange={(e) => setWantsPersonalization(e.target.checked)}
+                    />
+                    <span className="font-semibold text-gray-800">Desea Personalización (Impresión)</span>
                   </label>
-                  <input
-                    type="text"
-                    value={colorCode}
-                    onChange={(e) => setColorCode(e.target.value)}
-                    placeholder="Ej: Pantone 032 C..."
-                    className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all"
-                  />
-                </div>
+
+                  {/* Color Pantone (solo si seleccionó personalización) */}
+                  {wantsPersonalization && (
+                    <div className="pl-8 animate-in fade-in slide-in-from-top-2 duration-200">
+                      <label className="block text-sm font-semibold text-gray-800 mb-1">
+                        Color <span className="text-gray-400 font-normal">(código Pantone)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={colorCode}
+                        onChange={(e) => setColorCode(e.target.value)}
+                        placeholder="Ej: Pantone 032 C..."
+                        className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-black focus:border-transparent outline-none transition-all"
+                      />
+                    </div>
+                  )}
+                </>
               )}
 
               <Button
