@@ -7,7 +7,7 @@ export interface CartItem {
   customOptions?: {
     wantsPersonalization: boolean;
     pantoneColor?: string;
-    needsLid: boolean;
+    needsLid?: boolean;
     lidType?: 'flex' | 'lisa';
     cuneteType?: 'alimenticio' | 'industrial';
     cajetinShape?: 'cuadrada' | 'rectangular' | 'hexagonal';
